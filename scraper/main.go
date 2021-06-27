@@ -7,10 +7,12 @@ import (
 	"os"
 )
 
-func fetchUrl(url string) string {
+type PageFetcher func(url string) (*http.Response, error)
+
+func FetchUrl(url string, pageFetcher PageFetcher) string {
 	// Makes an http call to the specified url and returns a string representation of the
 	// HTML response.
-	resp, _ := http.Get(url)
+	resp, _ := pageFetcher(url)
 	bytes, _ := ioutil.ReadAll(resp.Body)
 	return string(bytes)
 }
@@ -18,6 +20,6 @@ func fetchUrl(url string) string {
 func main() {
 	var url, html string
 	url = os.Args[1]
-	html = fetchUrl(url)
+	html = FetchUrl(url, http.Get)
 	fmt.Println(html)
 }
