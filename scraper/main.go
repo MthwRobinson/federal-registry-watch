@@ -9,17 +9,20 @@ import (
 
 type PageFetcher func(url string) (*http.Response, error)
 
-func FetchUrl(url string, pageFetcher PageFetcher) string {
+func FetchUrl(url string, pageFetcher PageFetcher) (string, error) {
 	// Makes an http call to the specified url and returns a string representation of the
 	// HTML response.
-	resp, _ := pageFetcher(url)
+	resp, err := pageFetcher(url)
+	if err != nil {
+		return "", err
+	}
+
 	bytes, _ := ioutil.ReadAll(resp.Body)
-	return string(bytes)
+	return string(bytes), nil
 }
 
 func main() {
-	var url, html string
-	url = os.Args[1]
-	html = FetchUrl(url, http.Get)
+	url := os.Args[1]
+	html, _ := FetchUrl(url, http.Get)
 	fmt.Println(html)
 }
