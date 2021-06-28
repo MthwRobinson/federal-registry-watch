@@ -2,27 +2,46 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"golang.org/x/net/html"
 	"net/http"
 	"os"
 )
 
 type PageFetcher func(url string) (*http.Response, error)
 
-func FetchUrl(url string, pageFetcher PageFetcher) (string, error) {
+func FetchUrl(url string, pageFetcher PageFetcher) (*http.Response, error) {
 	// Makes an http call to the specified url and returns a string representation of the
 	// HTML response.
 	resp, err := pageFetcher(url)
 	if err != nil {
-		return "", err
+		return resp, err
 	}
 
-	bytes, _ := ioutil.ReadAll(resp.Body)
-	return string(bytes), nil
+	return resp, nil
+}
+
+func FindLinks(response *http.Response) {
+	// Iterates through an HTML object and finds <a> tages with href attributes
+	tokenizer := html.NewTokenizer(response.Body)
+
+	for {
+		tag := tokenizer.Next()
+		switch {
+		case tag == html.ErrorToken:
+			return
+		case tag == html.StartTagToken:
+			token := tokenizer.Token()
+
+			isAnchor := token.Data == "a"
+			if isAnchor {
+				fmt.Println(token)
+			}
+		}
+	}
 }
 
 func main() {
 	url := os.Args[1]
-	html, _ := FetchUrl(url, http.Get)
-	fmt.Println(html)
+	response, _ := FetchUrl(url, http.Get)
+	FindLinks(response)
 }

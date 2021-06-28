@@ -19,8 +19,9 @@ func mockPageFetcher(url string) (*http.Response, error) {
 func TestFetchUrl(t *testing.T) {
 	assert := assert.New(t)
 	url := "http://fake.website"
-	html, _ := FetchUrl(url, mockPageFetcher)
-	assert.Equal(html, "<h1>Hello World!</h1>")
+	response, _ := FetchUrl(url, mockPageFetcher)
+	bytes, _ := ioutil.ReadAll(response.Body)
+	assert.Equal(string(bytes), "<h1>Hello World!</h1>")
 }
 
 func mockPageFetcherWithError(url string) (*http.Response, error) {
