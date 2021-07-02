@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"golang.org/x/net/html"
 	"io/ioutil"
 	"net/http"
-	//"encoding/json"
 	// "os"
 )
 
@@ -24,10 +24,36 @@ func FetchUrl(url string, pageFetcher PageFetcher) (*http.Response, error) {
 	return resp, nil
 }
 
-func getRegulations(date string, page int) []string {
+type RegisterResults struct {
+	Count       int    `json:"count"`
+	Description string `json:"description"`
+	TotalPages  int    `json:"total_pages"`
+	NextPageURL string `json:"next_page_url"`
+	Results     []struct {
+		Title                  string `json:"title"`
+		Type                   string `json:"type"`
+		Abstract               string `json:"abstract"`
+		DocumentNumber         string `json:"document_number"`
+		HTMLURL                string `json:"html_url"`
+		PdfURL                 string `json:"pdf_url"`
+		PublicInspectionPdfURL string `json:"public_inspection_pdf_url"`
+		PublicationDate        string `json:"publication_date"`
+		Agencies               []struct {
+			RawName  string      `json:"raw_name"`
+			Name     string      `json:"name"`
+			ID       int         `json:"id"`
+			URL      string      `json:"url"`
+			JSONURL  string      `json:"json_url"`
+			ParentID interface{} `json:"parent_id"`
+			Slug     string      `json:"slug"`
+		} `json:"agencies"`
+		Excerpts string `json:"excerpts"`
+	} `json:"results"`
+}
+
+func getRegulations(date string, page int) RegisterResults {
 	// Collects a list of of document and links from the Federal Register for the
 	// specified date and page number
-	var urlList []string
 	url := "https://www.federalregister.gov/api/v1/documents?conditions%5Bpublication_date%5D%5Bis%5D=2021-06-29&format=json&page=2"
 
 	client := &http.Client{}
@@ -41,10 +67,13 @@ func getRegulations(date string, page int) []string {
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-	bytes, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(bytes))
+	resultJSON, _ := ioutil.ReadAll(resp.Body)
 
-	return urlList
+	var registerResults RegisterResults
+	json.Unmarshal([]byte(resultJSON), &registerResults)
+	fmt.Println(registerResults.Results[0].Agencies[0].Slug)
+
+	return registerResults
 
 }
 
@@ -70,7 +99,7 @@ func FindLinks(response *http.Response) {
 
 func main() {
 	// url := os.Args[1]
-	getLinks("2021-06-29", 1)
+	getRegulations("2021-06-29", 1)
 	// response, _ := FetchUrl(url, http.Get)
 	// FindLinks(response)
 }
