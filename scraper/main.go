@@ -3,25 +3,24 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"golang.org/x/net/html"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strconv"
 	// "os"
 )
 
-const baseURL string = "https://www.federalregister.gov/documents/search?conditions[publication_date[is]=%s&page=%s#"
+const registerBaseURL = "https://www.federalregister.gov/api/v1/documents"
 
-type PageFetcher func(url string) (*http.Response, error)
-
-func FetchUrl(url string, pageFetcher PageFetcher) (*http.Response, error) {
-	// Makes an http call to the specified url and returns a string representation of the
-	// HTML response.
-	resp, err := pageFetcher(url)
-	if err != nil {
-		return resp, err
-	}
-
-	return resp, nil
+func buildRegisterURL(date string, page int) string {
+	// Builds and encodes the url for fetching register results
+	params := url.Values{}
+	params.Add("conditions[publication_date][is]", date)
+	params.Add("page", strconv.Itoa(page))
+	params.Add("format", "json")
+	registerURL := registerBaseURL + "?" + params.Encode()
+	fmt.Println(registerURL)
+	return registerURL
 }
 
 type RegisterResults struct {
@@ -77,29 +76,7 @@ func getRegulations(date string, page int) RegisterResults {
 
 }
 
-func FindLinks(response *http.Response) {
-	// Iterates through an HTML object and finds <a> tages with href attributes
-	tokenizer := html.NewTokenizer(response.Body)
-
-	for {
-		tag := tokenizer.Next()
-		switch {
-		case tag == html.ErrorToken:
-			return
-		case tag == html.StartTagToken:
-			token := tokenizer.Token()
-
-			isAnchor := token.Data == "a"
-			if isAnchor {
-				fmt.Println(token)
-			}
-		}
-	}
-}
-
 func main() {
-	// url := os.Args[1]
-	getRegulations("2021-06-29", 1)
-	// response, _ := FetchUrl(url, http.Get)
-	// FindLinks(response)
+	registerUrl := buildRegisterURL("2020-06-01", 1)
+	fmt.Println(registerUrl)
 }
