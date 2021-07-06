@@ -19,7 +19,6 @@ func buildRegisterURL(date string, page int) string {
 	params.Add("page", strconv.Itoa(page))
 	params.Add("format", "json")
 	registerURL := registerBaseURL + "?" + params.Encode()
-	fmt.Println(registerURL)
 	return registerURL
 }
 
@@ -50,33 +49,40 @@ type RegisterResults struct {
 	} `json:"results"`
 }
 
-func getRegulations(date string, page int) RegisterResults {
+type HttpClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
+type regulationFetcher struct {
+	client HttpClient
+}
+
+func (r *regulationFetcher) getRegulations(date string, page int) RegisterResults {
 	// Collects a list of of document and links from the Federal Register for the
 	// specified date and page number
-	url := "https://www.federalregister.gov/api/v1/documents?conditions%5Bpublication_date%5D%5Bis%5D=2021-06-29&format=json&page=2"
+	registerURL := buildRegisterURL(date, page)
 
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", registerURL, nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := client.Do(req)
+
+	resp, err := r.client.Do(req)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 	resultJSON, _ := ioutil.ReadAll(resp.Body)
-
 	var registerResults RegisterResults
 	json.Unmarshal([]byte(resultJSON), &registerResults)
-	fmt.Println(registerResults.Results[0].Agencies[0].Slug)
 
 	return registerResults
-
 }
 
 func main() {
-	registerUrl := buildRegisterURL("2020-06-01", 1)
-	fmt.Println(registerUrl)
+	client := &http.Client{}
+	r := regulationFetcher{client: client}
+	registerResults := r.getRegulations("2021-06-02", 2)
+	fmt.Println(registerResults.NextPageURL)
 }
