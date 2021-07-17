@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
@@ -31,17 +30,24 @@ func TestGetRegulations(t *testing.T) {
 	client := &MockClient{}
 	r := regulationFetcher{client: client}
 	registerResults := r.getRegulations("2021-01-01", 5)
-	fmt.Println(registerResults)
 	assert.Equal(t, registerResults.Count, 25)
 }
 
 func TestCreateIfNotExists(t *testing.T) {
-	dir, _ := ioutil.TempDir("", "tmpdir")
-	fmt.Println(dir)
+	dir, _ := ioutil.TempDir("", "gotest")
 	defer os.RemoveAll(dir)
 
 	path := filepath.Join(dir, "testdir")
 	assert.NoDirExists(t, path)
 	createIfNotExists(path)
 	assert.DirExists(t, path)
+}
+
+func TestCreateDirectory(t *testing.T) {
+	dir, _ := ioutil.TempDir("", "gotest")
+	defer os.RemoveAll(dir)
+
+	createDirectory(dir, "2021-02-03", 5)
+	expectedPath := filepath.Join(dir, "federal-regulations", "2021", "02", "03", "5")
+	assert.DirExists(t, expectedPath)
 }

@@ -89,9 +89,22 @@ func createDirectory(target string, date string, page int) {
 	// Creates the directory to store the page of results. The directory structure looks
 	// like {year}/{month}/{day}/{page}. Each result is stored as an individual JSON file.
 	dateComponents := strings.Split(date, "-")
-	year, _, _ := dateComponents[0], dateComponents[1], dateComponents[2]
-	yearPath := filepath.Join(target, year)
+	year, month, day := dateComponents[0], dateComponents[1], dateComponents[2]
+
+	rootPath := filepath.Join(target, "federal-regulations")
+	createIfNotExists(rootPath)
+
+	yearPath := filepath.Join(rootPath, year)
 	createIfNotExists(yearPath)
+
+	monthPath := filepath.Join(yearPath, month)
+	createIfNotExists(monthPath)
+
+	dayPath := filepath.Join(monthPath, day)
+	createIfNotExists(dayPath)
+
+	pagePath := filepath.Join(dayPath, strconv.Itoa(page))
+	createIfNotExists(pagePath)
 }
 
 func createIfNotExists(path string) {
