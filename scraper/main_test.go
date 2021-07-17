@@ -26,7 +26,8 @@ func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
       "results": [
         {"title": "Look at this new regulation!"},
         {"title": "Here's another one!"}
-    ]}`)),
+        ]
+    }`)),
 	}
 	return &response, nil
 }
