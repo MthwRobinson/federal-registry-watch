@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -68,14 +69,14 @@ func (r *regulationFetcher) getRegulations(date string, page int) RegisterResult
 
 	req, err := http.NewRequest("GET", registerURL, nil)
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Fatal(err)
 	}
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := r.client.Do(req)
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Fatal(err)
 	}
 	resultJSON, _ := ioutil.ReadAll(resp.Body)
 	var registerResults RegisterResults
@@ -99,7 +100,7 @@ func createIfNotExists(path string) {
 		fmt.Println("Creating directory: ", path)
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
-			fmt.Print(err.Error())
+			log.Fatal(err)
 		}
 	}
 
@@ -116,9 +117,5 @@ func main() {
 	// 		fmt.Println(file.Name())
 	// 	}
 	// }
-	// dateComponents := strings.Split("2021-01-02", "-")
-	// year, month, day := dateComponents[0], dateComponents[1], dateComponents[2]
-	// date := fmt.Sprintf("%s-%s-%s", year, month, day)
-	// fmt.Println(date)
 	createDirectory("/home/matt/tmp", "2021-01-01", 1)
 }
