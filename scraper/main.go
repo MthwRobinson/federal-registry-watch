@@ -58,11 +58,11 @@ type HttpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type regulationFetcher struct {
+type registerFetcher struct {
 	client HttpClient
 }
 
-func (r *regulationFetcher) getRegulations(date string, page int) RegisterResults {
+func (r *registerFetcher) getRegisterResults(date string, page int) RegisterResults {
 	// Collects a list of of document and links from the Federal Register for the
 	// specified date and page number
 	registerURL := buildRegisterURL(date, page)
@@ -91,7 +91,7 @@ func createDirectory(target string, date string, page int) {
 	dateComponents := strings.Split(date, "-")
 	year, month, day := dateComponents[0], dateComponents[1], dateComponents[2]
 
-	rootPath := filepath.Join(target, "federal-regulations")
+	rootPath := filepath.Join(target, "register-files")
 	createIfNotExists(rootPath)
 
 	yearPath := filepath.Join(rootPath, year)
@@ -116,13 +116,14 @@ func createIfNotExists(path string) {
 			log.Fatal(err)
 		}
 	}
-
 }
 
 func main() {
-	// client := &http.Client{}
-	// r := regulationFetcher{client: client}
-	// registerResults := r.getRegulations("2021-06-02", 2)
+	client := &http.Client{}
+	r := registerFetcher{client: client}
+	registerResults := r.getRegisterResults("2021-08-02", 1)
+	fmt.Println(registerResults.TotalPages)
+
 	// fmt.Println(registerResults.NextPageURL)
 	// files, _ := ioutil.ReadDir("../../../")
 	// for _, file := range files {

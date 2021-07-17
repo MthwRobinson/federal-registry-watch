@@ -26,10 +26,10 @@ func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
 	return &response, nil
 }
 
-func TestGetRegulations(t *testing.T) {
+func TestGetRegisterResults(t *testing.T) {
 	client := &MockClient{}
-	r := regulationFetcher{client: client}
-	registerResults := r.getRegulations("2021-01-01", 5)
+	r := registerFetcher{client: client}
+	registerResults := r.getRegisterResults("2021-01-01", 5)
 	assert.Equal(t, registerResults.Count, 25)
 }
 
@@ -48,6 +48,6 @@ func TestCreateDirectory(t *testing.T) {
 	defer os.RemoveAll(dir)
 
 	createDirectory(dir, "2021-02-03", 5)
-	expectedPath := filepath.Join(dir, "federal-regulations", "2021", "02", "03", "5")
+	expectedPath := filepath.Join(dir, "register-files", "2021", "02", "03", "5")
 	assert.DirExists(t, expectedPath)
 }
