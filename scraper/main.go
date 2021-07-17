@@ -85,6 +85,22 @@ func (r *registerFetcher) getRegisterResults(date string, page int) RegisterResu
 	return registerResults
 }
 
+func (r *registerFetcher) getDailyRegisterResults(date string) []Result {
+	var totalPages int
+	var results []Result
+	for currentPage := 1; ; currentPage++ {
+		registerResults := r.getRegisterResults(date, currentPage)
+		totalPages = registerResults.TotalPages
+		for _, result := range registerResults.Results {
+			results = append(results, result)
+		}
+		if currentPage >= totalPages {
+			break
+		}
+	}
+	return results
+}
+
 func createDirectory(target string, date string, page int) {
 	// Creates the directory to store the page of results. The directory structure looks
 	// like {year}/{month}/{day}/{page}. Each result is stored as an individual JSON file.
@@ -110,7 +126,6 @@ func createDirectory(target string, date string, page int) {
 func createIfNotExists(path string) {
 	// Creates the target filepath if it does not already exist
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		fmt.Println("Creating directory: ", path)
 		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
 			log.Fatal(err)
@@ -121,8 +136,8 @@ func createIfNotExists(path string) {
 func main() {
 	client := &http.Client{}
 	r := registerFetcher{client: client}
-	registerResults := r.getRegisterResults("2021-08-02", 1)
-	fmt.Println(registerResults.TotalPages)
+	r.getDailyRegisterResults("2021-06-02")
+	// fmt.Println(registerResults)
 
 	// fmt.Println(registerResults.NextPageURL)
 	// files, _ := ioutil.ReadDir("../../../")
@@ -131,5 +146,5 @@ func main() {
 	// 		fmt.Println(file.Name())
 	// 	}
 	// }
-	createDirectory("/home/matt/tmp", "2021-01-01", 1)
+	// createDirectory("/home/matt/tmp", "2021-01-01", 1)
 }
