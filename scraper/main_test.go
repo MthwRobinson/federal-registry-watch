@@ -21,7 +21,12 @@ type MockClient struct {
 
 func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
 	response := http.Response{
-		Body: ioutil.NopCloser(bytes.NewBufferString(`{"count": 25}`)),
+		Body: ioutil.NopCloser(bytes.NewBufferString(`{
+      "total_pages": 5,
+      "results": [
+        {"title": "Look at this new regulation!"},
+        {"title": "Here's another one!"}
+    ]}`)),
 	}
 	return &response, nil
 }
@@ -30,7 +35,14 @@ func TestGetRegisterResults(t *testing.T) {
 	client := &MockClient{}
 	r := registerFetcher{client: client}
 	registerResults := r.getRegisterResults("2021-01-01", 5)
-	assert.Equal(t, registerResults.Count, 25)
+	assert.Equal(t, registerResults.TotalPages, 5)
+}
+
+func TestGetDailyResults(t *testing.T) {
+	client := &MockClient{}
+	r := registerFetcher{client: client}
+	registerResults := r.getDailyRegisterResults("2021-01-01")
+	assert.Equal(t, len(registerResults), 10)
 }
 
 func TestCreateIfNotExists(t *testing.T) {

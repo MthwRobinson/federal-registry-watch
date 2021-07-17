@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -86,6 +85,7 @@ func (r *registerFetcher) getRegisterResults(date string, page int) RegisterResu
 }
 
 func (r *registerFetcher) getDailyRegisterResults(date string) []Result {
+	// Uses pagination to fetch all of the registry results for the specified day
 	var totalPages int
 	var results []Result
 	for currentPage := 1; ; currentPage++ {
