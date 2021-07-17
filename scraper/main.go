@@ -22,31 +22,33 @@ func buildRegisterURL(date string, page int) string {
 	return registerURL
 }
 
+type Result struct {
+	Title                  string `json:"title"`
+	Type                   string `json:"type"`
+	Abstract               string `json:"abstract"`
+	DocumentNumber         string `json:"document_number"`
+	HTMLURL                string `json:"html_url"`
+	PdfURL                 string `json:"pdf_url"`
+	PublicInspectionPdfURL string `json:"public_inspection_pdf_url"`
+	PublicationDate        string `json:"publication_date"`
+	Agencies               []struct {
+		RawName  string      `json:"raw_name"`
+		Name     string      `json:"name"`
+		ID       int         `json:"id"`
+		URL      string      `json:"url"`
+		JSONURL  string      `json:"json_url"`
+		ParentID interface{} `json:"parent_id"`
+		Slug     string      `json:"slug"`
+	} `json:"agencies"`
+	Excerpts string `json:"excerpts"`
+}
+
 type RegisterResults struct {
-	Count       int    `json:"count"`
-	Description string `json:"description"`
-	TotalPages  int    `json:"total_pages"`
-	NextPageURL string `json:"next_page_url"`
-	Results     []struct {
-		Title                  string `json:"title"`
-		Type                   string `json:"type"`
-		Abstract               string `json:"abstract"`
-		DocumentNumber         string `json:"document_number"`
-		HTMLURL                string `json:"html_url"`
-		PdfURL                 string `json:"pdf_url"`
-		PublicInspectionPdfURL string `json:"public_inspection_pdf_url"`
-		PublicationDate        string `json:"publication_date"`
-		Agencies               []struct {
-			RawName  string      `json:"raw_name"`
-			Name     string      `json:"name"`
-			ID       int         `json:"id"`
-			URL      string      `json:"url"`
-			JSONURL  string      `json:"json_url"`
-			ParentID interface{} `json:"parent_id"`
-			Slug     string      `json:"slug"`
-		} `json:"agencies"`
-		Excerpts string `json:"excerpts"`
-	} `json:"results"`
+	Count       int      `json:"count"`
+	Description string   `json:"description"`
+	TotalPages  int      `json:"total_pages"`
+	NextPageURL string   `json:"next_page_url"`
+	Results     []Result `json:"results"`
 }
 
 type HttpClient interface {
@@ -81,8 +83,14 @@ func (r *regulationFetcher) getRegulations(date string, page int) RegisterResult
 }
 
 func main() {
-	client := &http.Client{}
-	r := regulationFetcher{client: client}
-	registerResults := r.getRegulations("2021-06-02", 2)
-	fmt.Println(registerResults.NextPageURL)
+	// client := &http.Client{}
+	// r := regulationFetcher{client: client}
+	// registerResults := r.getRegulations("2021-06-02", 2)
+	// fmt.Println(registerResults.NextPageURL)
+	files, _ := ioutil.ReadDir("../../../")
+	for _, file := range files {
+		if file.IsDir() {
+			fmt.Println(file.Name())
+		}
+	}
 }
