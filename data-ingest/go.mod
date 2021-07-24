@@ -1,4 +1,4 @@
-module github.com/MthwRobinson/federal-registry-watch/scraper
+module github.com/MthwRobinson/federal-registry-watch/data-ingest
 
 go 1.16
 
