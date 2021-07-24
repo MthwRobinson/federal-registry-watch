@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-  // "github.com/MthwRobinson/federal-registry-watch/data-ingest/utils"
+	// "github.com/MthwRobinson/federal-registry-watch/data-ingest/utils"
 )
 
 const registerBaseURL = "https://www.federalregister.gov/api/v1/documents"

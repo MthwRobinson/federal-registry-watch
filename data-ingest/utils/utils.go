@@ -1,11 +1,13 @@
 package utils
 
 import (
-  "log"
+	"encoding/json"
+	"io/ioutil"
+	"log"
 	"os"
-  "path/filepath"
-  "strings"
-  "strconv"
+	"path/filepath"
+	"strconv"
+	"strings"
 )
 
 func createDirectory(target string, date string, page int) {
@@ -37,5 +39,27 @@ func createIfNotExists(path string) {
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+}
+
+func writeJSON(data interface{}, filename string) {
+	// Writes a struct to a JSON file
+	file, err := json.MarshalIndent(&data, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	ioutil.WriteFile(filename, file, 0644)
+}
+
+func readJSON(data interface{}, filename string) {
+	// Reads a JSON file into a struct
+	file, readErr := ioutil.ReadFile(filename)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	marshalErr := json.Unmarshal([]byte(file), &data)
+	if marshalErr != nil {
+		log.Fatal(marshalErr)
 	}
 }
