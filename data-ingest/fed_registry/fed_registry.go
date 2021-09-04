@@ -27,11 +27,11 @@ type HttpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-type registerFetcher struct {
-	client HttpClient
+type RegisterFetcher struct {
+	Client HttpClient
 }
 
-func (r *registerFetcher) getRegisterResults(date string, page int) models.RegisterResults {
+func (r *RegisterFetcher) getRegisterResults(date string, page int) models.RegisterResults {
 	// Collects a list of of document and links from the Federal Register for the
 	// specified date and page number
 	registerURL := buildRegisterURL(date, page)
@@ -43,7 +43,7 @@ func (r *registerFetcher) getRegisterResults(date string, page int) models.Regis
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 
-	resp, err := r.client.Do(req)
+	resp, err := r.Client.Do(req)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func (r *registerFetcher) getRegisterResults(date string, page int) models.Regis
 	return registerResults
 }
 
-func (r *registerFetcher) getDailyRegisterResults(date string) []models.Result {
+func (r *RegisterFetcher) GetDailyRegisterResults(date string) []models.Result {
 	// Uses pagination to fetch all of the registry results for the specified day
 	var totalPages int
 	var results []models.Result
@@ -73,8 +73,8 @@ func (r *registerFetcher) getDailyRegisterResults(date string) []models.Result {
 
 func main() {
 	client := &http.Client{}
-	r := registerFetcher{client: client}
-	results := r.getDailyRegisterResults("2021-06-02")
+	r := RegisterFetcher{Client: client}
+	results := r.GetDailyRegisterResults("2021-06-02")
 	directory.WriteJSON(results, "/home/matt/tmp/test.json")
 
 	// fmt.Println(registerResults.NextPageURL)

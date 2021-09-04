@@ -32,14 +32,14 @@ func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
 
 func TestGetRegisterResults(t *testing.T) {
 	client := &MockClient{}
-	r := registerFetcher{client: client}
+	r := RegisterFetcher{Client: client}
 	registerResults := r.getRegisterResults("2021-01-01", 5)
 	assert.Equal(t, registerResults.TotalPages, 5)
 }
 
 func TestGetDailyResults(t *testing.T) {
 	client := &MockClient{}
-	r := registerFetcher{client: client}
-	registerResults := r.getDailyRegisterResults("2021-01-01")
+	r := RegisterFetcher{Client: client}
+	registerResults := r.GetDailyRegisterResults("2021-01-01")
 	assert.Equal(t, len(registerResults), 10)
 }
