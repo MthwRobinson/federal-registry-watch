@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+  "fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -102,8 +103,8 @@ func (r *registerFetcher) getDailyRegisterResults(date string) []Result {
 func main() {
 	client := &http.Client{}
 	r := registerFetcher{client: client}
-	r.getDailyRegisterResults("2021-06-02")
-	// fmt.Println(registerResults)
+	results := r.getDailyRegisterResults("2021-06-02")
+	fmt.Println(results)
 
 	// fmt.Println(registerResults.NextPageURL)
 	// files, _ := ioutil.ReadDir("../../../")
