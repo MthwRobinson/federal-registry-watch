@@ -2,13 +2,13 @@ package main
 
 import (
 	"encoding/json"
-  "fmt"
+	"fmt"
+	"github.com/MthwRobinson/federal-registry-watch/data-ingest/models"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
-	// "github.com/MthwRobinson/federal-registry-watch/data-ingest/utils"
 )
 
 const registerBaseURL = "https://www.federalregister.gov/api/v1/documents"
@@ -23,35 +23,6 @@ func buildRegisterURL(date string, page int) string {
 	return registerURL
 }
 
-type Result struct {
-	Title                  string `json:"title"`
-	Type                   string `json:"type"`
-	Abstract               string `json:"abstract"`
-	DocumentNumber         string `json:"document_number"`
-	HTMLURL                string `json:"html_url"`
-	PdfURL                 string `json:"pdf_url"`
-	PublicInspectionPdfURL string `json:"public_inspection_pdf_url"`
-	PublicationDate        string `json:"publication_date"`
-	Agencies               []struct {
-		RawName  string      `json:"raw_name"`
-		Name     string      `json:"name"`
-		ID       int         `json:"id"`
-		URL      string      `json:"url"`
-		JSONURL  string      `json:"json_url"`
-		ParentID interface{} `json:"parent_id"`
-		Slug     string      `json:"slug"`
-	} `json:"agencies"`
-	Excerpts string `json:"excerpts"`
-}
-
-type RegisterResults struct {
-	Count       int      `json:"count"`
-	Description string   `json:"description"`
-	TotalPages  int      `json:"total_pages"`
-	NextPageURL string   `json:"next_page_url"`
-	Results     []Result `json:"results"`
-}
-
 type HttpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
@@ -60,7 +31,7 @@ type registerFetcher struct {
 	client HttpClient
 }
 
-func (r *registerFetcher) getRegisterResults(date string, page int) RegisterResults {
+func (r *registerFetcher) getRegisterResults(date string, page int) models.RegisterResults {
 	// Collects a list of of document and links from the Federal Register for the
 	// specified date and page number
 	registerURL := buildRegisterURL(date, page)
@@ -77,16 +48,16 @@ func (r *registerFetcher) getRegisterResults(date string, page int) RegisterResu
 		log.Fatal(err)
 	}
 	resultJSON, _ := ioutil.ReadAll(resp.Body)
-	var registerResults RegisterResults
+	var registerResults models.RegisterResults
 	json.Unmarshal([]byte(resultJSON), &registerResults)
 
 	return registerResults
 }
 
-func (r *registerFetcher) getDailyRegisterResults(date string) []Result {
+func (r *registerFetcher) getDailyRegisterResults(date string) []models.Result {
 	// Uses pagination to fetch all of the registry results for the specified day
 	var totalPages int
-	var results []Result
+	var results []models.Result
 	for currentPage := 1; ; currentPage++ {
 		registerResults := r.getRegisterResults(date, currentPage)
 		totalPages = registerResults.TotalPages
