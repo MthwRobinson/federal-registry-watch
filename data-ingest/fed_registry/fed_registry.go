@@ -1,4 +1,4 @@
-package main
+package fed_registry
 
 import (
 	"encoding/json"
@@ -75,7 +75,7 @@ func main() {
 	client := &http.Client{}
 	r := registerFetcher{client: client}
 	results := r.getDailyRegisterResults("2021-06-02")
-  directory.WriteJSON(results, "/home/matt/tmp/test.json")
+	directory.WriteJSON(results, "/home/matt/tmp/test.json")
 
 	// fmt.Println(registerResults.NextPageURL)
 	// files, _ := ioutil.ReadDir("../../../")

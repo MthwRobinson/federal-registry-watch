@@ -1,4 +1,4 @@
-package main
+package fed_registry
 
 import (
 	"bytes"
