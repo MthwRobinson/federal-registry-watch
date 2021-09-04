@@ -22,8 +22,8 @@ func TestCreateDirectoryForDate(t *testing.T) {
 	dir, _ := ioutil.TempDir("", "fed-registry-test")
 	defer os.RemoveAll(dir)
 
-	createDirectoryForDate(dir, "2021-02-03", 5)
-	expectedPath := filepath.Join(dir, "register-files", "2021", "02", "03", "5")
+	CreateDirectoryForDate(dir, "2021-02-03")
+	expectedPath := filepath.Join(dir, "register-files", "2021", "02", "03")
 	assert.DirExists(t, expectedPath)
 }
 
@@ -40,9 +40,9 @@ func TestReadAndWriteJSON(t *testing.T) {
 
 	bear := Animal{Height: 8, Weight: 750, Paws: 4, Sound: "Roar!"}
 	filename := filepath.Join(dir, "bear.json")
-	writeJSON(bear, filename)
+	WriteJSON(bear, filename)
 
 	sameBear := Animal{}
-	readJSON(&sameBear, filename)
+	ReadJSON(&sameBear, filename)
 	assert.Equal(t, bear, sameBear)
 }
