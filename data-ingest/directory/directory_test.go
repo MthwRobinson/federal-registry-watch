@@ -18,11 +18,11 @@ func TestCreateIfNotExists(t *testing.T) {
 	assert.DirExists(t, path)
 }
 
-func TestCreateDirectory(t *testing.T) {
+func TestCreateDirectoryForDate(t *testing.T) {
 	dir, _ := ioutil.TempDir("", "fed-registry-test")
 	defer os.RemoveAll(dir)
 
-	createDirectory(dir, "2021-02-03", 5)
+	createDirectoryForDate(dir, "2021-02-03", 5)
 	expectedPath := filepath.Join(dir, "register-files", "2021", "02", "03", "5")
 	assert.DirExists(t, expectedPath)
 }

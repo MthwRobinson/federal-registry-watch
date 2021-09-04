@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func createDirectory(target string, date string, page int) {
+func createDirectoryForDate(target string, date string, page int) {
 	// Creates the directory to store the page of results. The directory structure looks
 	// like {year}/{month}/{day}/{page}. Each result is stored as an individual JSON file.
 	dateComponents := strings.Split(date, "-")
